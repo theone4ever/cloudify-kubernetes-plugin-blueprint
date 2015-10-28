@@ -6,10 +6,10 @@
 tosca_definitions_version: cloudify_dsl_1_1
 
 imports:  
-  - http://getcloudify.org/spec/cloudify/3.2/types.yaml
-  - http://getcloudify.org/spec/diamond-plugin/1.2/plugin.yaml
-  - http://getcloudify.org/spec/openstack-plugin/1.2/plugin.yaml
-  - http://www.getcloudify.org/spec/fabric-plugin/1.2/plugin.yaml
+  - http://getcloudify.org/spec/cloudify/3.2.1/types.yaml
+  - http://getcloudify.org/spec/diamond-plugin/1.2.1/plugin.yaml
+  - http://getcloudify.org/spec/openstack-plugin/1.2.1/plugin.yaml
+  - http://www.getcloudify.org/spec/fabric-plugin/1.2.1/plugin.yaml
   - types/mongotypes.yaml
   - plugins/kubernetes/plugin.yaml
 
@@ -26,11 +26,6 @@ inputs:
   agent_user:
     description: >
       User for connecting to agent VM's
-
-  db_ip:
-    description: >
-      Mongo db host
-    default: 10.10.10.10
 
 node_templates:
 
