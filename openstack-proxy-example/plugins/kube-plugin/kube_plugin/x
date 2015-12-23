@@ -1,0 +1,17 @@
+import re
+
+s="sd @{bba,ddd} fdsf%{asdf,sdf}sd ds f df"
+m=re.search('@{([^}]+)}|%{([^}]+)}',s)
+while(m):
+  if(m.group(1)):
+    fields=m.group(1).split(',')
+    if m and len(fields)>1:
+      s=s[:m.start()]+"val"+s[m.end(1)+1:]
+      m=re.search('@{([^,}]+)}|%{([^}]+)}',s)
+    else:
+      raise Exception("invalid pattern: "+s)
+  elif(m.group(2)):
+    s=s[:m.start()]+"evaled"+s[m.end(2)+1:]
+    m=re.search('@{([^}]+)}|%{([^}]+)}',s)
+print s
+
