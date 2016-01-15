@@ -55,3 +55,4 @@ class CloudifyHandler(rmqHandler):
             self.log.info(
                 "Failed publishing to rabbitMQ. Attempting reconnect")
             self._bind()
+

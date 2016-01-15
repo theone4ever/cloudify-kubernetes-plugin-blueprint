@@ -14,11 +14,13 @@ import os
 #Configure
 
 ip = os.popen('ifconfig eth0 | grep "inet\ addr" | cut -d: -f2 | cut -d" " -f1').read().rstrip()
+ip=ip.replace('.','_')
 
 cfg=ConfigObj("/diamond/diamond.conf",list_values=False)
 cfg['collectors']['HttpCollector']['enabled']="true"
 cfg['collectors']['HttpCollector']['req_url']=[os.getenv("CC_HTTP_URL")]
-cfg['collectors']['HttpCollector']['hostname']=os.getenv('DIAMOND_HOST','host')+ip
+cfg['collectors']['HttpCollector']['hostname']='.'.join([ip,os.getenv("CC_NODE"),os.getenv("CC_INSTANCE")])
+cfg['collectors']['HttpCollector']['path_prefix']=os.getenv("CC_DEPLOYMENT")
 
 cfg['handlers']['CloudifyHandler']['server']=os.getenv('CH_SERVER')
 cfg['handlers']['CloudifyHandler']['port']=os.getenv('CH_PORT',5672)

@@ -13,7 +13,7 @@ imports:
   - http://www.getcloudify.org/spec/fabric-plugin/1.2.1/plugin.yaml
   - plugins/cloudify-proxy-plugin/plugin.yaml
   - types/mongotypes.yaml
-  - plugins/kube_plugin/plugin.yaml
+  - plugins/kube-plugin/plugin.yaml
 
 inputs:
 
@@ -84,8 +84,11 @@ node_templates:
           overrides:
             - "['spec']['template']['spec']['containers'][0]['env'][1]['value'] = '@{mongo_proxy,mongo_info,ip}'"
             - "['spec']['template']['spec']['containers'][0]['env'][2]['value'] = '@{mongo_proxy,mongo_info,port}'"
-            - "['spec']['template']['spec']['containers'][1]['env'][2]['value'] = '%{deployment.id}.%{node.id}.'"
-        - file: service.yaml
+            - "['spec']['template']['spec']['containers'][1]['env'][0]['value'] = '%{management_ip}'"
+            - "['spec']['template']['spec']['containers'][1]['env'][2]['value'] = '%{deployment.id}'"
+            - "['spec']['template']['spec']['containers'][1]['env'][3]['value'] = '%{node.id}'"
+            - "['spec']['template']['spec']['containers'][1]['env'][4]['value'] = '%{instance.id}'"
+        - file: service2.yaml
           
     relationships:
       - type: cloudify.kubernetes.relationships.connected_to_master
@@ -93,28 +96,37 @@ node_templates:
       - type: cloudify.relationships.connected_to_proxy
         target: mongo_proxy
 
-#policies:
-#  kub_scale_policy:
-#    
-#
-#groups:
-#  kub_scale_group:
-#    members: [ nodecellar ]
-#    policies:
-#      scale_policy:
-#        type: cloudify.policies.types.ewma_stabilized
-#        properties:
-#          service: ...
-#          threshold: 
-#        triggers:
-#          execute_scale_workflow:
-#            type: cloudify.policies.triggers.execute_workflow
-#            parameters:
-#              workflow: kube_scale
-#              workflow_parameters:
-#                master: kubernetes_proxy
-#                ssh_user: ubuntu
-#                ssh_keyfilename: /root/.ssh/agent_key.pem
-#                name: nodecellar
-#                amount: +1
-#                
+policy_types:
+  scale_policy_type:
+    source: scale.clj
+    properties:
+      moving_window_size:
+        description: the moving window for individual sources in secs
+        default: 10
+      scale_threshold:
+        description: the value to trigger scaling over aggregrated moving values
+      cooldown_time:
+        description: the time to wait before evaluating again after a scale
+        default: 30
+
+groups:
+  group1:
+    members: [nodecellar]
+    policies:
+      test_policy:
+        type: scale_policy_type
+        properties:
+          moving_window_size: 10
+          scale_threshold: 10
+          cooldown_time: 60
+        triggers:
+          execute_scale_workflow:
+            type: cloudify.policies.triggers.execute_workflow
+            parameters:
+              workflow: kube_scale
+              workflow_parameters:
+                master: kubernetes_proxy
+                ssh_user: ubuntu
+                ssh_keyfilename: /root/.ssh/agent_key.pem
+                name: nodecellar
+                amount: '+1'

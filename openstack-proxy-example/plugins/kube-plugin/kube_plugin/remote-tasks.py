@@ -17,7 +17,7 @@
 # Kubernetes plugin implementation
 #
 from cloudify.decorators import operation
-from cloudify import ctx,manager
+from cloudify import ctx,manager,utils
 from fabric.api import env, put, run, sudo
 import os
 import re
@@ -99,7 +99,7 @@ def process_subs(s):
     # Match @ syntax.  Gets runtime properties
     if(m.group(1)):
       with open("/tmp/subs","a+") as f:
-        f.write(" m.group(1)"+str(m.group(1))+"\n")
+        f.write(" m.group(1)="+str(m.group(1))+"\n")
       fields=m.group(1).split(',')
       if m and len(fields)>1:
         # do substitution
@@ -121,29 +121,42 @@ def process_subs(s):
         raise Exception("invalid pattern: "+s)
 
     # Match % syntax.  Gets context property.
+    # also handles special token "management_ip"
     elif(m.group(2)):
       with open("/tmp/subs","a+") as f:
-        f.write(" m.group(1)"+str(m.group(1))+"\n")
-      s=s[:m.start()]+str(eval("ctx."+m.group(2)))+s[m.end(2)+1:]
+        f.write("m.group(2)="+str(m.group(2))+"\n")
+      if(m.group(2)=="management_ip"):
+        s=s[:m.start()]+str(utils.get_manager_ip())+s[m.end(2)+1:]
+      else:
+        s=s[:m.start()]+str(eval("ctx."+m.group(2)))+s[m.end(2)+1:]
       m=re.search(pat,s)
-    else:
-      with open("/tmp/subs","a+") as f:
-        f.write(" what?\n")
       
   return s
 
 #
 # delete existing item
+# Note ONLY FUNCTIONS FOR FILE BASED CONFIG
 #
 @operation
 def kube_delete(**kwargs):
   env['host_string']=ctx.instance.runtime_properties['master_ip']
   env['user']=ctx.node.properties['ssh_username']
   env['key_filename']=ctx.node.properties['ssh_keyfilename']
-  cmd="./kubectl delete {}s {}".format(ctx.instance.runtime_properties['kind'],ctx.node.properties['name'])
-  output=run(cmd)
-  if(output.return_code):
-    raise(NonRecoverableError('kubectl delete failed:{}'.format(output.stderr)))
+
+  if "kinds" in ctx.instance.runtime_properties:
+    for kind in ctx.instance.runtime_properties['kinds'].split(","):
+      kind=kind.split(':')
+      cmd="./kubectl delete {} {}".format(kind[0],kind[1])
+      output=run(cmd)
+      if(output.return_code):
+        raise(NonRecoverableError('kubectl delete failed:{}'.format(output.stderr)))
+  
+      
+  #cmd="./kubectl delete {}s {}".format(ctx.instance.runtime_properties['kind'],ctx.node.properties['name'])
+  
+  #output=run(cmd)
+  #if(output.return_code):
+  #  raise(NonRecoverableError('kubectl delete failed:{}'.format(output.stderr)))
 
 #
 # Use kubectl to run and expose a service
@@ -158,7 +171,7 @@ def kube_run_expose(**kwargs):
   env['key_filename']=ctx.node.properties['ssh_keyfilename']
 
   def write_and_run(d):
-    fname="/tmp/kub_{}.yaml".format(ctx.instance.id)
+    fname="/tmp/kub_{}_{}.yaml".format(ctx.instance.id,time.time())
     with open(fname,'w') as f:
       yaml.safe_dump(d,f)
     put(fname,fname)
@@ -182,6 +195,15 @@ def kube_run_expose(**kwargs):
         local_path=file['file']
       with open(local_path) as f:
         base=yaml.load(f)
+
+        #store kinds for uninstall
+        kinds=""
+        if 'kinds' in ctx.instance.runtime_properties:
+          kinds=ctx.instance.runtime_properties['kinds']+","+base['kind']+":"+base['metadata']['name']
+        else:
+          kinds=base['kind']+":"+base['metadata']['name']
+        ctx.instance.runtime_properties['kinds']=kinds
+
       if('overrides' in file):
         for o in file['overrides']:
           ctx.logger.info("exeing o={}".format(o))

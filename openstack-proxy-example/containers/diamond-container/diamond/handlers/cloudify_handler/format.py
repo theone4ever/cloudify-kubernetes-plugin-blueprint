@@ -15,13 +15,9 @@
 
 import json
 
-
 def jsonify(metric):
-    node_name='dummy'
-    node_id='id'
     deployment_id = metric.getPathPrefix()
-    #host, node_name, node_id = metric.host.split('.')
-    host=metric.host
+    host, node_name, node_id = metric.host.split('.')
     name = metric.getCollectorPath()
     raw_metric_path = metric.getMetricPath()
     path = raw_metric_path.replace('.', '_')

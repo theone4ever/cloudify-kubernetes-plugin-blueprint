@@ -21,7 +21,7 @@ req_vhost = www.my_server.com
 req_url = https://www.my_server.com/, https://www.my_server.com/assets/jquery.js
 
 Metrics are collected as :
-    - servers.<hostname>.nodecellar.<url>.value (size of the page received in bytes)
+    - <deployment_id>.<node_id><instance_id>.<url> (integer value of page received)
 
     '.' and '/' chars are replaced by __, url looking like
        http://www.site.com/admin/page.html are replaced by
@@ -48,7 +48,7 @@ class HttpCollector(diamond.collector.Collector):
 
     def get_default_config(self):
         default_config = super(HttpCollector, self).get_default_config()
-        default_config['path'] = 'nodecellar'
+        default_config['path'] = ''
         default_config['req_vhost'] = ''
         default_config['req_url'] = ['http://localhost/']
 
@@ -85,7 +85,7 @@ class HttpCollector(diamond.collector.Collector):
                 #    req_time.seconds * 1000000 + req_time.microseconds)
                 self.log.debug("collected %d", float(the_page))
                 self.publish_gauge(
-                    metric_name + '.value',
+                    metric_name,
                     float(the_page))
 
             except IOError, e:

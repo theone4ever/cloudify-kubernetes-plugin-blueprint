@@ -10,7 +10,7 @@ imports:
   - http://getcloudify.org/spec/openstack-plugin/1.2/plugin.yaml
   - http://www.getcloudify.org/spec/fabric-plugin/1.2/plugin.yaml
   - types/mongotypes.yaml
-  - plugins/k2/plugin.yaml
+  - plugins/kube-plugin/plugin.yaml
 
 inputs:
 
@@ -56,6 +56,8 @@ node_templates:
         name: master_security_group
         description: kubernetes master security group
       rules:
+      - remote_ip_prefix: 0.0.0.0/0  # for remote install
+        port: 22
       - remote_ip_prefix: 0.0.0.0/0
         port: { get_property: [ master, master_port ]}
       - remote_ip_prefix: 0.0.0.0/0  # for minions
@@ -99,4 +101,4 @@ outputs:
   kubernetes_info:
     description: Kuberenetes master info
     value:
-      url: {concat: ["http://",{ get_attribute: [ master_ip, floating_ip_address ]},{ get_property: [ master, master_port ]}]}
+      url: {concat: ["http://",{ get_attribute: [ master_ip, floating_ip_address ]},":",{ get_property: [ master, master_port ]}]}

@@ -41,7 +41,9 @@ spec:
           value: '10.67.79.2'
         - name: CC_HTTP_URL
           value: 'http://127.0.0.1:3000/connections'
-        - name: DIAMOND_HOST
-          value: '<deployment_id>.<node_id>.<node_instance_id>'
-        - name: BLORF
-          value: 'asdf'
+        - name: CC_DEPLOYMENT
+          value: ''
+        - name: CC_NODE
+          value: ''
+        - name: CC_INSTANCE
+          value: ''

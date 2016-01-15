@@ -17,7 +17,7 @@
 # Kubernetes plugin implementation
 #
 from cloudify.decorators import operation
-from cloudify import ctx,manager
+from cloudify import ctx,manager,utils
 import os
 import re
 import time
@@ -94,7 +94,7 @@ def process_subs(s):
     # Match @ syntax.  Gets runtime properties
     if(m.group(1)):
       with open("/tmp/subs","a+") as f:
-        f.write(" m.group(1)"+str(m.group(1))+"\n")
+        f.write(" m.group(1)="+str(m.group(1))+"\n")
       fields=m.group(1).split(',')
       if m and len(fields)>1:
         # do substitution
@@ -116,14 +116,15 @@ def process_subs(s):
         raise Exception("invalid pattern: "+s)
 
     # Match % syntax.  Gets context property.
+    # also handles special token "management_ip"
     elif(m.group(2)):
       with open("/tmp/subs","a+") as f:
-        f.write(" m.group(1)"+str(m.group(1))+"\n")
-      s=s[:m.start()]+str(eval("ctx."+m.group(2)))+s[m.end(2)+1:]
+        f.write("m.group(2)="+str(m.group(2))+"\n")
+      if(m.group(2)=="management_ip"):
+        s=s[:m.start()]+str(utils.get_manager_ip())+s[m.end(2)+1:]
+      else:
+        s=s[:m.start()]+str(eval("ctx."+m.group(2)))+s[m.end(2)+1:]
       m=re.search(pat,s)
-    else:
-      with open("/tmp/subs","a+") as f:
-        f.write(" what?\n")
       
   return s
 
