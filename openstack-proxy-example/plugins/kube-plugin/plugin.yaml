@@ -1,7 +1,5 @@
 plugins:
   kubernetes:
-# if using in agent mode, set executor to host_agent
-#    executor: host_agent
     executor: central_deployment_agent
     source: kube-plugin
 
@@ -28,7 +26,6 @@ node_types:
         description: install kubernetes
         default: true
      
-      
   ##########################################
   # Represents a master/node
   ##########################################

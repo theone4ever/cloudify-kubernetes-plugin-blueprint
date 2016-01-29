@@ -39,8 +39,8 @@ spec:
         env:
         - name: CH_SERVER
           value: '10.67.79.2'
-        - name: CC_HTTP_URL
-          value: 'http://127.0.0.1:3000/connections'
+        - name: CC_PORT
+          value: '3000'
         - name: CC_DEPLOYMENT
           value: ''
         - name: CC_NODE

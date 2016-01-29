@@ -24,6 +24,7 @@ def jsonify(metric):
     metric_value = float(metric.value)
     metric_type = metric.metric_type
     time = metric.timestamp
+    ttl = metric.ttl
     service = '.'.join([
         deployment_id,
         node_name,
@@ -66,5 +67,7 @@ def jsonify(metric):
 
         # epoch timestamp of the metric
         'time': time,
+
+        'ttl': ttl
     }
     return json.dumps(output)

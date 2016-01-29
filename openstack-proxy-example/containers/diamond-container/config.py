@@ -3,8 +3,7 @@ import os
 
 # Relevant env vars
 #
-# CC_HTTP_URL    - modified nodecellar url
-# 
+# CC_PORT        - port to measure connections
 #
 # CH_SERVER      - cloudify manager ip/host
 # CH_PORT        - rabbit port
@@ -17,10 +16,10 @@ ip = os.popen('ifconfig eth0 | grep "inet\ addr" | cut -d: -f2 | cut -d" " -f1')
 ip=ip.replace('.','_')
 
 cfg=ConfigObj("/diamond/diamond.conf",list_values=False)
-cfg['collectors']['HttpCollector']['enabled']="true"
-cfg['collectors']['HttpCollector']['req_url']=[os.getenv("CC_HTTP_URL")]
-cfg['collectors']['HttpCollector']['hostname']='.'.join([ip,os.getenv("CC_NODE"),os.getenv("CC_INSTANCE")])
-cfg['collectors']['HttpCollector']['path_prefix']=os.getenv("CC_DEPLOYMENT")
+cfg['collectors']['ConnCollector']['enabled']="true"
+cfg['collectors']['ConnCollector']['path_prefix']=os.getenv("CC_DEPLOYMENT")
+cfg['collectors']['ConnCollector']['port']=os.getenv("CC_PORT")
+cfg['collectors']['ConnCollector']['hostname']='.'.join([ip,os.getenv("CC_NODE"),os.getenv("CC_INSTANCE")])
 
 cfg['handlers']['CloudifyHandler']['server']=os.getenv('CH_SERVER')
 cfg['handlers']['CloudifyHandler']['port']=os.getenv('CH_PORT',5672)
