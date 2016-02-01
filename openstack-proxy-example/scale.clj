@@ -1,7 +1,5 @@
 (where (service #"{{service_selector}}")
 
-  #(info "EVENT: " %)
-
   (let [ hosts (atom #{}) ]
     (fn [e]
       ; store or remove host from set depending on whether it has expired.
