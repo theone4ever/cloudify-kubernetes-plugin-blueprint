@@ -144,7 +144,7 @@ done
 That should put the connections over 2 and you'll see an entry in the log that says `SCALE`.  Now on the master run `./kubectl get rc`, and you'll see something like:
 
 ```
-ONTROLLER   CONTAINER(S)   IMAGE(S)                SELECTOR         REPLICAS
+CONTROLLER   CONTAINER(S)   IMAGE(S)                SELECTOR         REPLICAS
 nodecellar   nodecellar     dfilppi/nodecellar:v2   app=nodecellar   2
              diamondd       dfilppi/diamond:v1
 
