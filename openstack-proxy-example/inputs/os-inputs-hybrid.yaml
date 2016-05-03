@@ -1,0 +1,7 @@
+# Inputs file for openstack-hybridservices-blueprint.yaml
+
+# Set to Kubernetes deployment id
+kub_deployment: ''
+
+# Set to MongoDb deployment id
+mongo_deployment: ''

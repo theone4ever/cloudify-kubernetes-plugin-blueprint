@@ -1,0 +1,5 @@
+# Inputs file for openstack-kubonly-blueprint.yaml
+
+flavor: ''
+image: ''
+agent_user: ubuntu

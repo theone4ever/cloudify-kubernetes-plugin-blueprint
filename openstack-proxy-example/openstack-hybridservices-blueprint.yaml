@@ -76,7 +76,7 @@ node_templates:
             - "['spec']['template']['spec']['containers'][1]['env'][2]['value'] = '%{deployment.id}'"
             - "['spec']['template']['spec']['containers'][1]['env'][3]['value'] = '%{node.id}'"
             - "['spec']['template']['spec']['containers'][1]['env'][4]['value'] = '%{instance.id}'"
-        - file: service2.yaml
+        - file: service.yaml
           
     relationships:
       - type: cloudify.kubernetes.relationships.connected_to_master
@@ -114,7 +114,7 @@ groups:
         type: scale_policy_type
         properties:
           moving_window_size: 10
-          scale_threshold: 10
+          scale_threshold: 2
           cooldown_time: 60
           service_selector: ".*connections$"
         triggers:
