@@ -19,7 +19,6 @@ spec:
         command: ["bash","start.sh"]
         ports:
         - containerPort: 3000
-          hostPort: 3000
           hostIP: 0.0.0.0
         env:
         - name: NODECELLAR_PORT
@@ -34,7 +33,6 @@ spec:
         command: ["bash","start.sh"]
         ports:
         - containerPort: 5672
-          hostPort: 5672
           hostIP: '0.0.0.0'
         env:
         - name: CH_SERVER
