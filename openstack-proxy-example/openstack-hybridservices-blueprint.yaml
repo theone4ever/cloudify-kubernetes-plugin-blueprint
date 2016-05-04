@@ -14,6 +14,7 @@ imports:
   - plugins/cloudify-proxy-plugin/plugin.yaml
   - types/mongotypes.yaml
   - plugins/kubernetes/plugin-remote.yaml
+  - plugins/cloudify-scale-plugin/plugin.yaml
 
 inputs:
 
@@ -84,37 +85,17 @@ node_templates:
       - type: cloudify.relationships.connected_to_proxy
         target: mongo_proxy
 
-policy_types:
-  scale_policy_type:
-    source: scale.clj
-    properties:
-      service_selector:
-        description: regular expression that selects the metric to be measured
-        default: ".*"
-      moving_window_size:
-        description: the moving window for individual sources in secs
-        default: 10
-      scale_threshold:
-        description: the value to trigger scaling over aggregrated moving values
-      scale_limit:
-        description: scaling limit
-        default: 10
-      scale_direction:
-        description: scale up (<) or scale down (>)
-        default: <
-      cooldown_time:
-        description: the time to wait before evaluating again after a scale
-        default: 30
-
 groups:
-  group1:
+  scaleup_group:
     members: [nodecellar]
     policies:
-      test_policy:
+      scaleup_policy:
         type: scale_policy_type
         properties:
           moving_window_size: 10
-          scale_threshold: 2
+          scale_threshold: 10
+          scale_limit: 4
+          scale_direction: '<'
           cooldown_time: 60
           service_selector: ".*connections$"
         triggers:
@@ -128,3 +109,27 @@ groups:
                 ssh_keyfilename: /root/.ssh/agent_key.pem
                 name: nodecellar
                 amount: '+1'
+  scaledown_group:
+    members: [nodecellar]
+    policies:
+      scaledown_policy:
+        type: scale_policy_type
+        properties:
+          moving_window_size: 10
+          scale_threshold: 5
+          scale_limit: 2
+          scale_direction: '>'
+          cooldown_time: 60
+          service_selector: ".*connections$"
+        triggers:
+          execute_scale_workflow:
+            type: cloudify.policies.triggers.execute_workflow
+            parameters:
+              workflow: kube_scale
+              workflow_parameters:
+                master: kubernetes_proxy
+                ssh_user: ubuntu
+                ssh_keyfilename: /root/.ssh/agent_key.pem
+                name: nodecellar
+                amount: '-1'
+
