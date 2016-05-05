@@ -5,7 +5,7 @@ plugins:
 
 policy_types:
   scale_policy_type:
-    source: scale.clj
+    source: plugins/cloudify-scale-plugin/scale.clj
     properties:
       service_selector:
         description: regular expression that selects the metric to be measured
