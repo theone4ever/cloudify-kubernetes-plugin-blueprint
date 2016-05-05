@@ -11,9 +11,9 @@ imports:
   - http://getcloudify.org/spec/cloudify/3.3.1/types.yaml
   - http://getcloudify.org/spec/openstack-plugin/1.3.1/plugin.yaml
   - http://www.getcloudify.org/spec/fabric-plugin/1.3.1/plugin.yaml
+  - http://www.github.com/cloudify-examples/cloudify-kubernetes-plugin/raw/1.3.1/plugin-remote.yaml
   - plugins/cloudify-proxy-plugin/plugin.yaml
   - types/mongotypes.yaml
-  - plugins/kubernetes/plugin-remote.yaml
   - plugins/cloudify-scale-plugin/plugin.yaml
 
 inputs:
