@@ -7,10 +7,6 @@ Limitations (as of 5/2/2016):
 + Tested on Openstack Helion and Kilo
 + Tested on Cloudify 3.2.1 and 3.3.1
 
-## Hybrid Cloud Example
-
-The hybrid cloud example can be found in the `openstack-proxy-blueprint` directory.  As the name implies, the blueprints target openstack (tested on Helion and Kilo), and most recently tested on Cloudify 3.3.1.  The example demonstrates three separate blueprints that are orchestrated together by using the Cloudify deployment proxy type (available [separately](https://github.com/cloudify-examples/cloudify-proxy-plugin) on github).  The blueprints together are another twist on the familiar Nodecellar [example](https://github.com/cloudify-cosmo/cloudify-nodecellar-example).  In this case, Nodejs is deployed as a Kubernetes microservice, that connects to an external (to Kubernetes) instance of MongoDb.  Additionally, a policy is defined to demonstrate a simple microservice autoscaling scenario.  
-
 ### Installation Instructions
 
 1. In the `inputs` directory are 3 inputs files, one for each of the blueprints.  The "kub" inputs are the same as the "mongo" inputs, but you can vary them if you like (except for the `ubuntu` user).  The "hybrid" inputs are simply the names you will assign to the deployments you will create for Kubernetes and MongoDb (e.g. kub-deployment and mongo-deployment).  These blueprints have only been tested on Ubuntu 14.04 and up, so use a 14.04 image.  As always with Cloudify, any image you use must support passwordless ssh, and passwordless sudo (including from an ssh client).  Otherwise agent installation will fail.
