@@ -1,4 +1,8 @@
+
+# This project is forked from https://github.com/cloudify-examples/cloudify-kubernetes-plugin-blueprint to use a forked version of cloudify kubernetes plugin solove the deployment problem.
+
 ## Cloudify Kubernetes Plugin
+
 
 This project contains sample blueprints that demonstrate a hybrid cloud scenario involving microservice and non-microservice orchestration, along with Cloudify driven microservice autoscaling in Kubernetes.  The details of that sample are [here](#hybrid-cloud-example).
 
