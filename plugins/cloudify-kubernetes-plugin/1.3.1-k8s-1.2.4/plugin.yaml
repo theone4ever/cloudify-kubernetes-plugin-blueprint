@@ -1,7 +1,7 @@
 plugins:
   kubernetes:
     executor: host_agent
-    source: http://git.cf.ericsson.net/5g-mgmt/cloudify-kubernetes-plugin/repository/archive.zip?ref=master
+    source: https://github.com/theone4ever/cloudify-kubernetes-plugin/archive/master.zip
 
 node_types:
   cloudify.kubernetes.Base:
